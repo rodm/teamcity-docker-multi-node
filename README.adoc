@@ -1,0 +1,8 @@
+= Example plugin development with TeamCity Secondary Nodes
+:uri-teamcity: https://www.jetbrains.com/teamcity/[TeamCity]
+:uri-teamcity-docs: https://www.jetbrains.com/help/teamcity/2020.1
+:uri-multiple-nodes: {uri-teamcity-docs}/multinode-setup.html
+:uri-secondary-node: {uri-teamcity-docs}/configuring-secondary-node.html[Secondary Node]
+
+This project demonstrates how to build and test a TeamCity plugin with {uri-multiple-nodes}[multiple nodes] and
+how to extend the Gradle TeamCity Environments plugin.
