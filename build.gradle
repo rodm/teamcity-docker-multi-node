@@ -13,3 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+plugins {
+    id 'com.github.rodm.teamcity-environments'
+}
+
+configurations {
+    teamcityPlugins
+}
+
+dependencies {
+    teamcityPlugins project(path: ':plugin', configuration: 'plugin')
+}
+
+teamcity {
+    environments {
+        'teamcity2021.2'(Docker) {
+            version = '2021.2.3'
+            serverName = 'tc-server'
+            agentName = 'tc-agent'
+            plugins = configurations.teamcityPlugins
+        }
+    }
+}
