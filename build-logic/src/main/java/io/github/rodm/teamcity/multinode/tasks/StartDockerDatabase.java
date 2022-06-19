@@ -13,16 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.github.rodm.teamcity.multinode.tasks;
 
-pluginManagement {
-    plugins {
-        id 'com.github.rodm.teamcity-server' version '1.5-beta-1a'
-        id 'com.github.rodm.teamcity-environments' version '1.5-beta-1a'
+import com.github.rodm.teamcity.internal.DockerTask;
+import org.gradle.process.ExecOperations;
+import org.gradle.process.ExecSpec;
+
+import javax.inject.Inject;
+
+public abstract class StartDockerDatabase extends DockerTask {
+
+    @Inject
+    public StartDockerDatabase(ExecOperations execOperations) {
+        super(execOperations);
+    }
+
+    @Override
+    protected void configure(ExecSpec execSpec) {
+        execSpec.args("start");
+        execSpec.args(getContainerName().get());
     }
 }
-
-rootProject.name = 'teamcity-docker-multi-node'
-
-includeBuild 'build-logic'
-
-include 'plugin'

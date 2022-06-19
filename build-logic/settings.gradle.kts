@@ -14,15 +14,4 @@
  * limitations under the License.
  */
 
-pluginManagement {
-    plugins {
-        id 'com.github.rodm.teamcity-server' version '1.5-beta-1a'
-        id 'com.github.rodm.teamcity-environments' version '1.5-beta-1a'
-    }
-}
-
-rootProject.name = 'teamcity-docker-multi-node'
-
-includeBuild 'build-logic'
-
-include 'plugin'
+rootProject.name = "teamcity-multi-node-plugin"

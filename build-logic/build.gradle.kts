@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-pluginManagement {
+plugins {
+    id ("java-gradle-plugin")
+}
+
+repositories {
+    gradlePluginPortal()
+}
+
+dependencies {
+    implementation ("io.github.rodm:gradle-teamcity-plugin:1.5-beta-1a")
+}
+
+gradlePlugin {
     plugins {
-        id 'com.github.rodm.teamcity-server' version '1.5-beta-1a'
-        id 'com.github.rodm.teamcity-environments' version '1.5-beta-1a'
+        create("multiNodeEnvironmentsPlugin") {
+            id = "io.github.rodm.teamcity-multinode-environments"
+            displayName = "Gradle TeamCity Multi-Node Environments plugin"
+            implementationClass = "io.github.rodm.teamcity.multinode.MultiNodeEnvironmentsPlugin"
+        }
     }
 }
 
-rootProject.name = 'teamcity-docker-multi-node'
-
-includeBuild 'build-logic'
-
-include 'plugin'

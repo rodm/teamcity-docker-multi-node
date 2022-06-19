@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.github.rodm.teamcity.multinode;
 
-pluginManagement {
-    plugins {
-        id 'com.github.rodm.teamcity-server' version '1.5-beta-1a'
-        id 'com.github.rodm.teamcity-environments' version '1.5-beta-1a'
-    }
+public interface DatabaseConfiguration {
+    String getImage();
+    void setImage(String image);
+
+    String getName();
+    void setName(String name);
+
+    String getUrl();
+    void setUrl(String url);
+
+    String getUsername();
+    void setUsername(String username);
+
+    String getPassword();
+    void setPassword(String password);
+
+    Object getDriver();
+    void setDriver(Object driver);
+    void driver(Object driver);
 }
-
-rootProject.name = 'teamcity-docker-multi-node'
-
-includeBuild 'build-logic'
-
-include 'plugin'

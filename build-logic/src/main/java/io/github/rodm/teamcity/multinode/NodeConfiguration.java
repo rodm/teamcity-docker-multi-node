@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.github.rodm.teamcity.multinode;
 
-pluginManagement {
-    plugins {
-        id 'com.github.rodm.teamcity-server' version '1.5-beta-1a'
-        id 'com.github.rodm.teamcity-environments' version '1.5-beta-1a'
-    }
+import org.gradle.api.Named;
+
+public interface NodeConfiguration extends Named {
+
+    String getPort();
+    void setPort(String port);
+
+    Object getServerOptions();
+    void setServerOptions(Object options);
+    void serverOptions(String... options);
 }
-
-rootProject.name = 'teamcity-docker-multi-node'
-
-includeBuild 'build-logic'
-
-include 'plugin'
