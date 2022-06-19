@@ -31,9 +31,9 @@ teamcity {
     server {
         archiveName = "teamcity-plugin.zip"
         descriptor {
-            name = project.name
-            displayName = project.name
-            description = "Example TeamCity Server Plugin"
+            name = "multi-node-plugin"
+            displayName = "Example Plugin"
+            description = "Example multi-node plugin"
             version = project.version as String
             vendorName = extra["vendorName"] as String
             vendorUrl = "https://github.com/rodm"
