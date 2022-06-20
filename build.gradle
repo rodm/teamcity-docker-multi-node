@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
+import io.github.rodm.teamcity.multinode.MultiNodeEnvironment
+
 plugins {
-    id 'com.github.rodm.teamcity-environments'
+    id 'io.github.rodm.teamcity-multinode-environments'
+}
+
+repositories {
+    mavenCentral()
 }
 
 configurations {
+    database
     teamcityPlugins
 }
 
 dependencies {
+    database 'mysql:mysql-connector-java:8.0.29'
     teamcityPlugins project(path: ':plugin', configuration: 'plugin')
 }
 
@@ -33,6 +41,28 @@ teamcity {
             serverName = 'tc-server'
             agentName = 'tc-agent'
             plugins = configurations.teamcityPlugins
+        }
+
+        register('teamcity2022.04', MultiNodeEnvironment) {
+            version = '2022.04'
+            plugins = configurations.teamcityPlugins
+            database {
+                image = 'mysql/mysql-server:5.7'
+                name = 'tc-2022.04-db'
+                url = 'jdbc:mysql://localhost:3306/teamcity'
+                username = 'teamcity'
+                password = 'teamcity'
+                driver = configurations.database
+            }
+            nodes {
+                node1 {
+                    port = '8211'
+                }
+                node2 {
+                    port = '8311'
+                    serverOptions = '-Dteamcity.server.nodeId=node2 -Dteamcity.server.rootURL=http://localhost:8311/'
+                }
+            }
         }
     }
 }
