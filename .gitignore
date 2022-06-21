@@ -1,0 +1,13 @@
+
+# Gradle
+.gradle/
+build/
+gradle.properties
+
+# IDEA
+.idea
+*.iml
+out/
+
+# gradle-teamcity-plugin
+data/
