@@ -148,12 +148,13 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
             private void configureDockerTasks(Project project, DefaultMultiNodeEnvironment environment) {
                 final TaskContainer tasks = project.getTasks();
                 NamedDomainObjectContainer<NodeConfiguration> nodes = environment.getNodes();
-                nodes.all(node -> {
-                    configureNodeTasks(project, environment, (DefaultNodeConfiguration) node);
-                });
+                nodes.configureEach(node -> configureNodeTasks(project, environment, (DefaultNodeConfiguration) node));
 
                 NodeConfiguration mainNode = getMainNode(nodes).orElseThrow(() -> new GradleException("No main node"));
                 Provider<String> mainNodeContainerName = environment.getServerNameProperty().map(cn -> cn + "-" + mainNode.getName());
+                final String environmentName = capitalize(environment.getName());
+                final String nodeName = capitalize(mainNode.getName());
+                String mainNodeStartTaskName =  "start" + environmentName + nodeName + "Server";
 
                 tasks.register(environment.startAgentTaskName(), StartDockerAgent.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
@@ -163,7 +164,7 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                     task.getImageName().set(environment.getAgentImageProperty());
                     task.getContainerName().set(environment.getAgentNameProperty());
                     task.getServerContainerName().set(mainNodeContainerName);
-//                    task.mustRunAfter(tasks.named(environment.startServerTaskName()));
+                    task.mustRunAfter(tasks.named(mainNodeStartTaskName));
                 });
 
                 tasks.register(environment.stopAgentTaskName(), StopDockerAgent.class, task -> {
@@ -187,7 +188,7 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                     task.getContainerName().set(containerName);
                     task.getPort().set(node.getPort());
                     task.doFirst(t -> project.mkdir(environment.getDataDir()));
-//                            task.dependsOn(tasks.named(environment.deployTaskName()));
+                    task.dependsOn(tasks.named(environment.deployTaskName()));
                 });
 
                 String stopServerTaskName = "stop" + name + capitalize(node.getName()) + "Server";
