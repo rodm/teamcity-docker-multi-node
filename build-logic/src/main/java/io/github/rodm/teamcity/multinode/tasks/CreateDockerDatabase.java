@@ -15,32 +15,39 @@
  */
 package io.github.rodm.teamcity.multinode.tasks;
 
+import com.github.rodm.teamcity.internal.ContainerConfiguration;
+import com.github.rodm.teamcity.internal.DockerOperations;
 import com.github.rodm.teamcity.internal.DockerTask;
+import org.gradle.api.GradleException;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
-import org.gradle.process.ExecOperations;
-import org.gradle.process.ExecSpec;
+import org.gradle.api.tasks.TaskAction;
 
-import javax.inject.Inject;
+import static java.lang.String.format;
 
 public abstract class CreateDockerDatabase extends DockerTask {
-
-    @Inject
-    public CreateDockerDatabase(ExecOperations execOperations) {
-        super(execOperations);
-    }
 
     @Input
     public abstract Property<String> getImageName();
 
-    @Override
-    protected void configure(ExecSpec execSpec) {
-        execSpec.args("create");
-        execSpec.args("--name", getContainerName().get());
-        execSpec.args("-p", "3306:3306");
-        execSpec.args("-e", "MYSQL_DATABASE=teamcity");
-        execSpec.args("-e", "MYSQL_USER=teamcity");
-        execSpec.args("-e", "MYSQL_PASSWORD=teamcity");
-        execSpec.args(getImageName().get());
+    @TaskAction
+    void createDatabase() {
+        DockerOperations dockerOperations = new DockerOperations();
+
+        String image = getImageName().get();
+        if (!dockerOperations.isImageAvailable(image)) {
+            throw new GradleException(format(IMAGE_NOT_AVAILABLE, image));
+        }
+
+        ContainerConfiguration configuration = ContainerConfiguration.builder()
+                .image(image)
+                .name(getContainerName().get())
+                .environment("MYSQL_DATABASE", "teamcity")
+                .environment("MYSQL_USER", "teamcity")
+                .environment("MYSQL_PASSWORD", "teamcity")
+                .bindPort("3306", "3306");
+
+        String id = dockerOperations.createContainer(configuration);
+        getLogger().info("Created database container with id: {}", id);
     }
 }

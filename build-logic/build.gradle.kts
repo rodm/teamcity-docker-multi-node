@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-    implementation ("io.github.rodm:gradle-teamcity-plugin:1.5-beta-1a")
+    implementation ("io.github.rodm:gradle-teamcity-plugin:1.5-beta-2a")
 }
 
 gradlePlugin {

@@ -21,7 +21,6 @@ import com.github.rodm.teamcity.TeamCityPluginExtension;
 import com.github.rodm.teamcity.TeamCityVersion;
 import com.github.rodm.teamcity.internal.DefaultTeamCityEnvironments;
 import com.github.rodm.teamcity.internal.DisablePluginAction;
-import com.github.rodm.teamcity.internal.DockerInspectAction;
 import com.github.rodm.teamcity.internal.EnablePluginAction;
 import io.github.rodm.teamcity.multinode.internal.DefaultMultiNodeEnvironment;
 import io.github.rodm.teamcity.multinode.internal.DefaultNodeConfiguration;
@@ -54,6 +53,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.github.rodm.teamcity.TeamCityPlugin.ENVIRONMENTS_PLUGIN_ID;
 import static com.github.rodm.teamcity.TeamCityPlugin.TEAMCITY_GROUP;
 import static com.github.rodm.teamcity.TeamCityServerPlugin.SERVER_PLUGIN_TASK_NAME;
 import static com.github.rodm.teamcity.TeamCityVersion.VERSION_2018_2;
@@ -62,7 +62,7 @@ import static org.gradle.language.base.plugins.LifecycleBasePlugin.ASSEMBLE_TASK
 public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
-        project.getPluginManager().apply("com.github.rodm.teamcity-environments");
+        project.getPluginManager().apply(ENVIRONMENTS_PLUGIN_ID);
 
         TeamCityPluginExtension extension = project.getExtensions().getByType(TeamCityPluginExtension.class);
 
@@ -163,7 +163,6 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                     task.getImageName().set(environment.getAgentImageProperty());
                     task.getContainerName().set(environment.getAgentNameProperty());
                     task.getServerContainerName().set(mainNodeContainerName);
-                    task.doFirst(new DockerInspectAction());
 //                    task.mustRunAfter(tasks.named(environment.startServerTaskName()));
                 });
 

@@ -15,22 +15,23 @@
  */
 package io.github.rodm.teamcity.multinode.tasks;
 
+import com.github.rodm.teamcity.internal.DockerOperations;
 import com.github.rodm.teamcity.internal.DockerTask;
-import org.gradle.process.ExecOperations;
-import org.gradle.process.ExecSpec;
-
-import javax.inject.Inject;
+import org.gradle.api.tasks.TaskAction;
 
 public abstract class StartDockerDatabase extends DockerTask {
 
-    @Inject
-    public StartDockerDatabase(ExecOperations execOperations) {
-        super(execOperations);
-    }
+    @TaskAction
+    void startDatabase() {
+        DockerOperations dockerOperations = new DockerOperations();
 
-    @Override
-    protected void configure(ExecSpec execSpec) {
-        execSpec.args("start");
-        execSpec.args(getContainerName().get());
+        String containerId = getContainerName().get();
+        if (dockerOperations.isContainerRunning(containerId)) {
+            getLogger().info("Database container '{}' is already running", containerId);
+            return;
+        }
+
+        dockerOperations.startContainer(getContainerName().get());
+        getLogger().info("Started database container");
     }
 }
