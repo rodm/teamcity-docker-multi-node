@@ -24,6 +24,7 @@ import com.github.rodm.teamcity.internal.DisablePluginAction;
 import com.github.rodm.teamcity.internal.EnablePluginAction;
 import io.github.rodm.teamcity.multinode.internal.DefaultMultiNodeEnvironment;
 import io.github.rodm.teamcity.multinode.internal.DefaultNodeConfiguration;
+import io.github.rodm.teamcity.multinode.tasks.ConfigureDatabase;
 import io.github.rodm.teamcity.multinode.tasks.CreateDockerDatabase;
 import io.github.rodm.teamcity.multinode.tasks.StartDockerDatabase;
 import io.github.rodm.teamcity.multinode.tasks.StopDockerDatabase;
@@ -125,10 +126,17 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                 final String name = capitalize(environment.getName());
 
                 DatabaseConfiguration database = environment.getDatabase();
-                tasks.register("configure" + name + "Database", Copy.class, task -> {
+                Provider<String> driverDir = environment.getDataDirProperty().map(path -> path + "/lib/jdbc");
+                Provider<String> databaseProperties = environment.getDataDirProperty().map(path -> path + "/config/database.properties");
+                tasks.register("configure" + name + "Database", ConfigureDatabase.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
-                    task.into(environment.getDataDirProperty().map(path -> path + "/lib/jdbc"));
-                    task.from(database.getDriver());
+                    task.getContainerName().set(database.getName());
+                    task.getDatabaseUrl().set(database.getUrl());
+                    task.getUsername().set(database.getUsername());
+                    task.getPassword().set(database.getPassword());
+                    task.getDriver().from(database.getDriver());
+                    task.getDriverDir().set(project.file(driverDir));
+                    task.getDatabaseProperties().set(project.file(databaseProperties));
                 });
                 tasks.register("create" + name + "Database", CreateDockerDatabase.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
