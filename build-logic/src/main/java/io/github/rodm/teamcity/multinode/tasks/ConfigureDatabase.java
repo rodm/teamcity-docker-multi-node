@@ -71,12 +71,13 @@ public abstract class ConfigureDatabase extends DefaultTask {
     void configureDatabase() {
         DockerOperations dockerOperations = new DockerOperations();
         String databaseIpAddress = dockerOperations.getIpAddress(getContainerName().get());
+        String databaseUrl = getDatabaseUrl().get().replace("localhost", databaseIpAddress);
         File file = getDatabaseProperties().get().getAsFile();
         try (Writer writer = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8)){
             Properties props = new Properties();
             props.setProperty("connectionProperties.user", getUsername().get());
             props.setProperty("connectionProperties.password", getPassword().get());
-            props.setProperty("connectionUrl", "jdbc:mysql://" + databaseIpAddress + ":3306/teamcity");
+            props.setProperty("connectionUrl", databaseUrl);
             props.store(writer, null);
         }
         catch (IOException e) {
