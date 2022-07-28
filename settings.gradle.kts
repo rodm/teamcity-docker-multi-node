@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-rootProject.name = 'teamcity-docker-multi-node'
+rootProject.name = "teamcity-docker-multi-node"
 
-includeBuild 'build-logic'
+includeBuild ("build-logic")
 
-include 'plugin'
+include ("plugin")
 
-include 'multi-node-groovy'
+include ("multi-node-groovy")
