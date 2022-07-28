@@ -31,7 +31,7 @@ configurations {
 
 dependencies {
     database 'mysql:mysql-connector-java:8.0.29'
-    teamcityPlugins project(path: ':plugin', configuration: 'plugin')
+    teamcityPlugins project(path: ':teamcity-plugin', configuration: 'plugin')
 }
 
 teamcity {

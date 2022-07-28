@@ -18,6 +18,6 @@ rootProject.name = "teamcity-docker-multi-node"
 
 includeBuild ("build-logic")
 
-include ("plugin")
+include ("teamcity-plugin")
 
 include ("multi-node-groovy")
