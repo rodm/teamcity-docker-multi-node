@@ -21,3 +21,4 @@ includeBuild ("build-logic")
 include ("teamcity-plugin")
 
 include ("multi-node-groovy")
+include ("multi-node-kotlin")
