@@ -15,9 +15,8 @@
  */
 package io.github.rodm.teamcity.multinode.tasks;
 
-import com.github.rodm.teamcity.internal.DockerOperations;
-import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
+import com.github.rodm.teamcity.internal.DockerTask;
+import io.github.rodm.teamcity.multinode.internal.ConfigureDatabaseContainerAction;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileSystemOperations;
@@ -28,26 +27,21 @@ import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.workers.WorkQueue;
+import org.gradle.workers.WorkerExecutor;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.Properties;
 
-public abstract class ConfigureDatabase extends DefaultTask {
+public abstract class ConfigureDatabase extends DockerTask {
 
+    private final WorkerExecutor executor;
     private final FileSystemOperations fileSystemOperations;
 
     @Inject
-    public ConfigureDatabase(FileSystemOperations fileSystemOperations) {
+    public ConfigureDatabase(WorkerExecutor executor, FileSystemOperations fileSystemOperations) {
+        this.executor = executor;
         this.fileSystemOperations = fileSystemOperations;
     }
-
-    @Input
-    public abstract Property<String> getContainerName();
 
     @Input
     public abstract Property<String> getDatabaseUrl();
@@ -69,20 +63,15 @@ public abstract class ConfigureDatabase extends DefaultTask {
 
     @TaskAction
     void configureDatabase() {
-        DockerOperations dockerOperations = new DockerOperations();
-        String databaseIpAddress = dockerOperations.getIpAddress(getContainerName().get());
-        String databaseUrl = getDatabaseUrl().get().replace("localhost", databaseIpAddress);
-        File file = getDatabaseProperties().get().getAsFile();
-        try (Writer writer = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8)){
-            Properties props = new Properties();
-            props.setProperty("connectionProperties.user", getUsername().get());
-            props.setProperty("connectionProperties.password", getPassword().get());
-            props.setProperty("connectionUrl", databaseUrl);
-            props.store(writer, null);
-        }
-        catch (IOException e) {
-            throw new GradleException("Failed to write properties file", e);
-        }
+        WorkQueue queue = executor.classLoaderIsolation(spec -> spec.getClasspath().from(getClasspath()));
+        queue.submit(ConfigureDatabaseContainerAction.class, params -> {
+            params.getContainerName().set(getContainerName());
+            params.getDatabaseUrl().set(getDatabaseUrl());
+            params.getUsername().set(getUsername());
+            params.getPassword().set(getPassword());
+            params.getDatabaseProperties().set(getDatabaseProperties());
+        });
+        queue.await();
 
         fileSystemOperations.copy(copySpec -> {
             copySpec.from(getDriver());

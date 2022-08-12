@@ -15,23 +15,30 @@
  */
 package io.github.rodm.teamcity.multinode.tasks;
 
-import com.github.rodm.teamcity.internal.DockerOperations;
 import com.github.rodm.teamcity.internal.DockerTask;
+import io.github.rodm.teamcity.multinode.internal.StartContainerAction;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.workers.WorkQueue;
+import org.gradle.workers.WorkerExecutor;
+
+import javax.inject.Inject;
 
 public abstract class StartDockerDatabase extends DockerTask {
 
+    private final WorkerExecutor executor;
+
+    @Inject
+    public StartDockerDatabase(WorkerExecutor executor) {
+        this.executor = executor;
+    }
+
     @TaskAction
     void startDatabase() {
-        DockerOperations dockerOperations = new DockerOperations();
-
-        String containerId = getContainerName().get();
-        if (dockerOperations.isContainerRunning(containerId)) {
-            getLogger().info("Database container '{}' is already running", containerId);
-            return;
-        }
-
-        dockerOperations.startContainer(getContainerName().get());
-        getLogger().info("Started database container");
+        WorkQueue queue = executor.classLoaderIsolation(spec -> spec.getClasspath().from(getClasspath()));
+        queue.submit(StartContainerAction.class, params -> {
+            params.getContainerName().set(getContainerName());
+            params.getDescription().set("TeamCity Database");
+        });
+        queue.await();
     }
 }

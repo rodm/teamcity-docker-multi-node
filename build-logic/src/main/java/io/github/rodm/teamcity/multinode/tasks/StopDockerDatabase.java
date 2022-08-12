@@ -15,23 +15,30 @@
  */
 package io.github.rodm.teamcity.multinode.tasks;
 
-import com.github.rodm.teamcity.internal.DockerOperations;
 import com.github.rodm.teamcity.internal.DockerTask;
+import com.github.rodm.teamcity.internal.StopContainerAction;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.workers.WorkQueue;
+import org.gradle.workers.WorkerExecutor;
+
+import javax.inject.Inject;
 
 public abstract class StopDockerDatabase extends DockerTask {
 
+    private final WorkerExecutor executor;
+
+    @Inject
+    public StopDockerDatabase(WorkerExecutor executor) {
+        this.executor = executor;
+    }
+
     @TaskAction
     void stopDatabase() {
-        DockerOperations dockerOperations = new DockerOperations();
-
-        String containerId = getContainerName().get();
-        if (!dockerOperations.isContainerRunning(containerId)) {
-            getLogger().info("Database container '{}' is already stopped", containerId);
-            return;
-        }
-
-        dockerOperations.stopContainer(getContainerName().get());
-        getLogger().info("Stopped database container");
+        WorkQueue queue = executor.classLoaderIsolation(spec -> spec.getClasspath().from(getClasspath()));
+        queue.submit(StopContainerAction.class, params -> {
+            params.getContainerName().set(getContainerName());
+            params.getDescription().set("TeamCity Database");
+        });
+        queue.await();
     }
 }

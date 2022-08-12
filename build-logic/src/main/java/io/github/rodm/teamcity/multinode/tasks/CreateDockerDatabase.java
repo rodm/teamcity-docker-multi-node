@@ -15,39 +15,35 @@
  */
 package io.github.rodm.teamcity.multinode.tasks;
 
-import com.github.rodm.teamcity.internal.ContainerConfiguration;
-import com.github.rodm.teamcity.internal.DockerOperations;
 import com.github.rodm.teamcity.internal.DockerTask;
-import org.gradle.api.GradleException;
+import io.github.rodm.teamcity.multinode.internal.CreateDatabaseContainerAction;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.workers.WorkQueue;
+import org.gradle.workers.WorkerExecutor;
 
-import static java.lang.String.format;
+import javax.inject.Inject;
 
 public abstract class CreateDockerDatabase extends DockerTask {
+
+    private final WorkerExecutor executor;
+
+    @Inject
+    public CreateDockerDatabase(WorkerExecutor executor) {
+        this.executor = executor;
+    }
 
     @Input
     public abstract Property<String> getImageName();
 
     @TaskAction
     void createDatabase() {
-        DockerOperations dockerOperations = new DockerOperations();
-
-        String image = getImageName().get();
-        if (!dockerOperations.isImageAvailable(image)) {
-            throw new GradleException(format(IMAGE_NOT_AVAILABLE, image));
-        }
-
-        ContainerConfiguration configuration = ContainerConfiguration.builder()
-                .image(image)
-                .name(getContainerName().get())
-                .environment("MYSQL_DATABASE", "teamcity")
-                .environment("MYSQL_USER", "teamcity")
-                .environment("MYSQL_PASSWORD", "teamcity")
-                .bindPort("3306", "3306");
-
-        String id = dockerOperations.createContainer(configuration);
-        getLogger().info("Created database container with id: {}", id);
+        WorkQueue queue = executor.classLoaderIsolation(spec -> spec.getClasspath().from(getClasspath()));
+        queue.submit(CreateDatabaseContainerAction.class, params -> {
+            params.getImageName().set(getImageName());
+            params.getContainerName().set(getContainerName());
+        });
+        queue.await();
     }
 }

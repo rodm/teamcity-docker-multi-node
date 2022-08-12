@@ -21,6 +21,7 @@ import com.github.rodm.teamcity.TeamCityPluginExtension;
 import com.github.rodm.teamcity.TeamCityVersion;
 import com.github.rodm.teamcity.internal.DefaultTeamCityEnvironments;
 import com.github.rodm.teamcity.internal.DisablePluginAction;
+import com.github.rodm.teamcity.internal.DockerTask;
 import com.github.rodm.teamcity.internal.EnablePluginAction;
 import io.github.rodm.teamcity.multinode.internal.DefaultMultiNodeEnvironment;
 import io.github.rodm.teamcity.multinode.internal.DefaultNodeConfiguration;
@@ -83,6 +84,10 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                     configureDatabaseTasks(project, (DefaultMultiNodeEnvironment) environment);
                     configureDockerTasks(project, (DefaultMultiNodeEnvironment) environment);
                 });
+
+                final TaskContainer tasks = project.getTasks();
+                tasks.withType(DockerTask.class, task ->
+                        task.setClasspath(project.getConfigurations().getByName("docker")));
             }
 
             private void configureDeploymentTasks(Project project, BaseTeamCityEnvironment environment) {
