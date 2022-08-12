@@ -34,6 +34,8 @@ public abstract class CreateDatabaseContainerAction implements WorkAction<Create
     public interface CreateContainerParameters extends WorkParameters {
         Property<String> getImageName();
         Property<String> getContainerName();
+        Property<String> getUsername();
+        Property<String> getPassword();
     }
 
     @Override
@@ -56,8 +58,8 @@ public abstract class CreateDatabaseContainerAction implements WorkAction<Create
                 .image(image)
                 .name(containerId)
                 .environment("MYSQL_DATABASE", "teamcity")
-                .environment("MYSQL_USER", "teamcity")
-                .environment("MYSQL_PASSWORD", "teamcity")
+                .environment("MYSQL_USER", parameters.getUsername().get())
+                .environment("MYSQL_PASSWORD", parameters.getPassword().get())
                 .bindPort("3306", "3306");
 
         String id = dockerOperations.createContainer(configuration);

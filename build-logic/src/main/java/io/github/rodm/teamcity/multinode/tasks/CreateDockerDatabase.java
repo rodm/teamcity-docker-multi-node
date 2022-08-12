@@ -36,6 +36,12 @@ public abstract class CreateDockerDatabase extends DockerTask {
 
     @Input
     public abstract Property<String> getImageName();
+    
+    @Input
+    public abstract Property<String> getUsername();
+
+    @Input
+    public abstract Property<String> getPassword();
 
     @TaskAction
     void createDatabase() {
@@ -43,6 +49,8 @@ public abstract class CreateDockerDatabase extends DockerTask {
         queue.submit(CreateDatabaseContainerAction.class, params -> {
             params.getImageName().set(getImageName());
             params.getContainerName().set(getContainerName());
+            params.getUsername().set(getUsername());
+            params.getPassword().set(getPassword());
         });
         queue.await();
     }
