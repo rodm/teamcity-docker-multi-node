@@ -178,6 +178,7 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                     task.getImageName().set(environment.getAgentImageProperty());
                     task.getContainerName().set(environment.getAgentNameProperty());
                     task.getServerContainerName().set(mainNodeContainerName);
+                    task.getServerPort().set("8111");
                     task.mustRunAfter(tasks.named(mainNodeStartTaskName));
                 });
 
