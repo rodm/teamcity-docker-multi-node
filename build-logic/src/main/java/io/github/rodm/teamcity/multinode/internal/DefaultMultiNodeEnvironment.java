@@ -124,6 +124,34 @@ public class DefaultMultiNodeEnvironment extends BaseTeamCityEnvironment impleme
         return nodes;
     }
 
+    public String createDatabaseTaskName() {
+        return "create" + capitalize(getName()) + "Database";
+    }
+
+    public String startDatabaseTaskName() {
+        return "start" + capitalize(getName()) + "Database";
+    }
+
+    public String stopDatabaseTaskName() {
+        return "stop" + capitalize(getName()) + "Database";
+    }
+
+    public String configureDatabaseTaskName() {
+        return "configure" + capitalize(getName()) + "Database";
+    }
+
+    public String startNodeTaskName(String nodeName) {
+        return "start" + capitalize(getName()) + capitalize(nodeName) + "Server";
+    }
+
+    public String stopNodeTaskName(String nodeName) {
+        return "stop" + capitalize(getName()) + capitalize(nodeName) + "Server";
+    }
+
+    private String capitalize(String name) {
+        return name.substring(0, 1).toUpperCase() + name.substring(1);
+    }
+
     private void validateImage(String image, String property) {
         if (image.contains(":")) {
             throw new InvalidUserDataException(property + " must not include a tag.");

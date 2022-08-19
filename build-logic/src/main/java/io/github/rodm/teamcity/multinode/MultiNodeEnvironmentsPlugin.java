@@ -127,12 +127,11 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
 
             private void configureDatabaseTasks(Project project, DefaultMultiNodeEnvironment environment) {
                 final TaskContainer tasks = project.getTasks();
-                final String name = capitalize(environment.getName());
 
                 DatabaseConfiguration database = environment.getDatabase();
                 Provider<String> driverDir = environment.getDataDirProperty().map(path -> path + "/lib/jdbc");
                 Provider<String> databaseProperties = environment.getDataDirProperty().map(path -> path + "/config/database.properties");
-                tasks.register("configure" + name + "Database", ConfigureDatabase.class, task -> {
+                tasks.register(environment.configureDatabaseTaskName(), ConfigureDatabase.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
                     task.getContainerName().set(database.getName());
                     task.getDatabaseUrl().set(database.getUrl());
@@ -142,18 +141,18 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                     task.getDriverDir().set(project.file(driverDir));
                     task.getDatabaseProperties().set(project.file(databaseProperties));
                 });
-                tasks.register("create" + name + "Database", CreateDockerDatabase.class, task -> {
+                tasks.register(environment.createDatabaseTaskName(), CreateDockerDatabase.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
                     task.getImageName().set(database.getImage());
                     task.getContainerName().set(database.getName());
                     task.getUsername().set(database.getUsername());
                     task.getPassword().set(database.getPassword());
                 });
-                tasks.register("start" + name + "Database", StartDockerDatabase.class, task -> {
+                tasks.register(environment.startDatabaseTaskName(), StartDockerDatabase.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
                     task.getContainerName().set(database.getName());
                 });
-                tasks.register("stop" + name + "Database", StopDockerDatabase.class, task -> {
+                tasks.register(environment.stopDatabaseTaskName(), StopDockerDatabase.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
                     task.getContainerName().set(database.getName());
                 });
@@ -166,10 +165,6 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
 
                 NodeConfiguration mainNode = getMainNode(nodes).orElseThrow(() -> new GradleException("No main node"));
                 Provider<String> mainNodeContainerName = environment.getServerNameProperty().map(cn -> cn + "-" + mainNode.getName());
-                final String environmentName = capitalize(environment.getName());
-                final String nodeName = capitalize(mainNode.getName());
-                String mainNodeStartTaskName =  "start" + environmentName + nodeName + "Server";
-
                 tasks.register(environment.startAgentTaskName(), StartDockerAgent.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
                     task.getVersion().set(environment.getVersion());
@@ -179,7 +174,7 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                     task.getContainerName().set(environment.getAgentNameProperty());
                     task.getServerContainerName().set(mainNodeContainerName);
                     task.getServerPort().set("8111");
-                    task.mustRunAfter(tasks.named(mainNodeStartTaskName));
+                    task.mustRunAfter(tasks.named(environment.startNodeTaskName(mainNode.getName())));
                 });
 
                 tasks.register(environment.stopAgentTaskName(), StopDockerAgent.class, task -> {
@@ -190,10 +185,9 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
 
             private void configureNodeTasks(Project project, DefaultMultiNodeEnvironment environment, DefaultNodeConfiguration node) {
                 final TaskContainer tasks = project.getTasks();
-                final String name = capitalize(environment.getName());
+
                 Provider<String> containerName = environment.getServerNameProperty().map(cn -> cn + "-" + node.getName());
-                String startServerTaskName = "start" + name + capitalize(node.getName()) + "Server";
-                tasks.register(startServerTaskName, StartDockerServer.class, task -> {
+                tasks.register(environment.startNodeTaskName(node.getName()), StartDockerServer.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
                     task.getVersion().set(environment.getVersion());
                     task.getDataDir().set(environment.getDataDirProperty());
@@ -206,11 +200,9 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                     task.dependsOn(tasks.named(environment.deployTaskName()));
                 });
 
-                String stopServerTaskName = "stop" + name + capitalize(node.getName()) + "Server";
-                tasks.register(stopServerTaskName, StopDockerServer.class, task -> {
+                tasks.register(environment.stopNodeTaskName(node.getName()), StopDockerServer.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
                     task.getContainerName().set(containerName);
-//                            task.finalizedBy(tasks.named(environment.undeployTaskName()));
                 });
             }
 
@@ -219,10 +211,6 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                 return nodes.stream()
                         .filter(node -> !((DefaultNodeConfiguration) node).getServerOptionsProvider().get().contains(nodeId))
                         .findFirst();
-            }
-
-            private String capitalize(String name) {
-                return name.substring(0, 1).toUpperCase() + name.substring(1);
             }
         });
     }
