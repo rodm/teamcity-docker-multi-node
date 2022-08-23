@@ -19,9 +19,9 @@ import com.github.rodm.teamcity.BaseTeamCityEnvironment;
 import com.github.rodm.teamcity.TeamCityEnvironment;
 import com.github.rodm.teamcity.TeamCityPluginExtension;
 import com.github.rodm.teamcity.TeamCityVersion;
+import com.github.rodm.teamcity.docker.DockerTask;
 import com.github.rodm.teamcity.internal.DefaultTeamCityEnvironments;
 import com.github.rodm.teamcity.internal.DisablePluginAction;
-import com.github.rodm.teamcity.internal.DockerTask;
 import com.github.rodm.teamcity.internal.EnablePluginAction;
 import com.github.rodm.teamcity.tasks.Deploy;
 import com.github.rodm.teamcity.tasks.ServerPlugin;
@@ -174,7 +174,6 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                     task.getImageName().set(environment.getAgentImageProperty());
                     task.getContainerName().set(environment.getAgentNameProperty());
                     task.getServerContainerName().set(mainNodeContainerName);
-                    task.getServerPort().set("8111");
                     task.mustRunAfter(tasks.named(environment.startNodeTaskName(mainNode.getName())));
                 });
 

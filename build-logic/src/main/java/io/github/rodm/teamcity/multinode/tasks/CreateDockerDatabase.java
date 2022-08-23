@@ -15,7 +15,7 @@
  */
 package io.github.rodm.teamcity.multinode.tasks;
 
-import com.github.rodm.teamcity.internal.DockerTask;
+import com.github.rodm.teamcity.docker.DockerTask;
 import io.github.rodm.teamcity.multinode.internal.CreateDatabaseContainerAction;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;

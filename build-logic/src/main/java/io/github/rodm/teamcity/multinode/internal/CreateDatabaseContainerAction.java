@@ -15,8 +15,8 @@
  */
 package io.github.rodm.teamcity.multinode.internal;
 
-import com.github.rodm.teamcity.internal.ContainerConfiguration;
-import com.github.rodm.teamcity.internal.DockerOperations;
+import com.github.rodm.teamcity.docker.ContainerConfiguration;
+import com.github.rodm.teamcity.docker.DockerOperations;
 import org.gradle.api.GradleException;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
@@ -24,7 +24,7 @@ import org.gradle.api.provider.Property;
 import org.gradle.workers.WorkAction;
 import org.gradle.workers.WorkParameters;
 
-import static com.github.rodm.teamcity.internal.DockerTask.IMAGE_NOT_AVAILABLE;
+import static com.github.rodm.teamcity.docker.DockerOperations.IMAGE_NOT_AVAILABLE;
 import static java.lang.String.format;
 
 public abstract class CreateDatabaseContainerAction implements WorkAction<CreateDatabaseContainerAction.CreateContainerParameters> {

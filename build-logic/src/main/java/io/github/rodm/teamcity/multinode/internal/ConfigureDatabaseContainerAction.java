@@ -15,7 +15,7 @@
  */
 package io.github.rodm.teamcity.multinode.internal;
 
-import com.github.rodm.teamcity.internal.DockerOperations;
+import com.github.rodm.teamcity.docker.DockerOperations;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.logging.Logger;
