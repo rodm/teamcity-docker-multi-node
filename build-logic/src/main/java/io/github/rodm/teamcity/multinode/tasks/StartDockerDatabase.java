@@ -16,7 +16,7 @@
 package io.github.rodm.teamcity.multinode.tasks;
 
 import com.github.rodm.teamcity.docker.DockerTask;
-import io.github.rodm.teamcity.multinode.internal.StartContainerAction;
+import com.github.rodm.teamcity.docker.StartContainerAction;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.workers.WorkQueue;
 import org.gradle.workers.WorkerExecutor;

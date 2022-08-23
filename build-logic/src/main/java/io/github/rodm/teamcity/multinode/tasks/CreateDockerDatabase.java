@@ -15,8 +15,9 @@
  */
 package io.github.rodm.teamcity.multinode.tasks;
 
+import com.github.rodm.teamcity.docker.ContainerConfiguration;
+import com.github.rodm.teamcity.docker.CreateContainerAction;
 import com.github.rodm.teamcity.docker.DockerTask;
-import io.github.rodm.teamcity.multinode.internal.CreateDatabaseContainerAction;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
@@ -45,12 +46,18 @@ public abstract class CreateDockerDatabase extends DockerTask {
 
     @TaskAction
     void createDatabase() {
+        ContainerConfiguration configuration = ContainerConfiguration.builder()
+                .image(getImageName().get())
+                .name(getContainerName().get())
+                .environment("MYSQL_DATABASE", "teamcity")
+                .environment("MYSQL_USER", getUsername().get())
+                .environment("MYSQL_PASSWORD", getPassword().get())
+                .bindPort("3306", "3306");
+
         WorkQueue queue = executor.classLoaderIsolation(spec -> spec.getClasspath().from(getClasspath()));
-        queue.submit(CreateDatabaseContainerAction.class, params -> {
-            params.getImageName().set(getImageName());
-            params.getContainerName().set(getContainerName());
-            params.getUsername().set(getUsername());
-            params.getPassword().set(getPassword());
+        queue.submit(CreateContainerAction.class, params -> {
+            params.getConfiguration().set(configuration);
+            params.getDescription().set("TeamCity Database");
         });
         queue.await();
     }
