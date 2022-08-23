@@ -82,6 +82,8 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                     configureDeploymentTasks(project, (BaseTeamCityEnvironment) environment);
                     configureDatabaseTasks(project, (DefaultMultiNodeEnvironment) environment);
                     configureDockerTasks(project, (DefaultMultiNodeEnvironment) environment);
+                    configureCommonTasks(project, (DefaultMultiNodeEnvironment) environment);
+                    configureTaskDependencies(project, (DefaultMultiNodeEnvironment) environment);
                 });
 
                 final TaskContainer tasks = project.getTasks();
@@ -95,7 +97,6 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                     task.setGroup(TEAMCITY_GROUP);
                     task.getPlugins().from(environment.getPlugins());
                     task.getPluginsDir().set(project.file(environment.getPluginsDirProperty()));
-                    task.dependsOn(tasks.named(ASSEMBLE_TASK_NAME));
                 });
 
                 final TaskProvider<Undeploy> undeployPlugin = tasks.register(environment.undeployTaskName(), Undeploy.class, task -> {
@@ -197,13 +198,57 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                     task.getContainerName().set(containerName);
                     task.getPort().set(node.getPort());
                     task.doFirst(t -> project.mkdir(environment.getDataDir()));
-                    task.dependsOn(tasks.named(environment.deployTaskName()));
                 });
 
                 tasks.register(environment.stopNodeTaskName(node.getName()), StopDockerServer.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
                     task.getContainerName().set(containerName);
                 });
+            }
+
+            private void configureCommonTasks(Project project, DefaultMultiNodeEnvironment environment) {
+                final TaskContainer tasks = project.getTasks();
+
+                tasks.register(environment.startEnvironmentTaskName(), task -> {
+                    task.setGroup(TEAMCITY_GROUP);
+                    task.setDescription("Starts the database, TeamCity Server nodes and Build Agent");
+                });
+                tasks.register(environment.stopEnvironmentTaskName(), task -> {
+                    task.setGroup(TEAMCITY_GROUP);
+                    task.setDescription("Stops the database, TeamCity Server nodes and Build Agent");
+                });
+            }
+
+            private void configureTaskDependencies(Project project, DefaultMultiNodeEnvironment environment) {
+                final TaskContainer tasks = project.getTasks();
+                NamedDomainObjectContainer<NodeConfiguration> nodes = environment.getNodes();
+                
+                tasks.named(environment.startEnvironmentTaskName()).configure(task -> {
+                    task.dependsOn(tasks.named(environment.startAgentTaskName()));
+                    nodes.configureEach(node ->
+                            task.dependsOn(tasks.named(environment.startNodeTaskName(node.getName()))));
+                });
+                nodes.configureEach(node ->
+                        tasks.named(environment.startNodeTaskName(node.getName())).configure(task ->
+                                task.dependsOn(tasks.named(environment.deployTaskName()), tasks.named(environment.configureDatabaseTaskName()))));
+                tasks.named(environment.deployTaskName()).configure(task ->
+                        task.dependsOn(tasks.named(ASSEMBLE_TASK_NAME)));
+                tasks.named(environment.configureDatabaseTaskName()).configure(task ->
+                        task.dependsOn(tasks.named(environment.startDatabaseTaskName())));
+                tasks.named(environment.startDatabaseTaskName()).configure(task ->
+                        task.dependsOn(tasks.named(environment.createDatabaseTaskName())));
+
+                tasks.named(environment.stopEnvironmentTaskName()).configure(task ->
+                        task.dependsOn(tasks.named(environment.undeployTaskName())));
+                tasks.named(environment.undeployTaskName()).configure(task ->
+                        task.dependsOn(tasks.named(environment.stopDatabaseTaskName())));
+                tasks.named(environment.stopDatabaseTaskName()).configure(task ->
+                        nodes.configureEach(node ->
+                                task.dependsOn(tasks.named(environment.stopNodeTaskName(node.getName()))))
+                );
+                nodes.configureEach(node ->
+                        tasks.named(environment.stopNodeTaskName(node.getName())).configure(task ->
+                                task.dependsOn(environment.stopAgentTaskName())));
             }
 
             private Optional<NodeConfiguration> getMainNode(NamedDomainObjectContainer<NodeConfiguration> nodes) {

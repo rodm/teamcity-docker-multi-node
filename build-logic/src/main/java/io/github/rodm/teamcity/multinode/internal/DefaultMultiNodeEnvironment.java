@@ -124,6 +124,14 @@ public class DefaultMultiNodeEnvironment extends BaseTeamCityEnvironment impleme
         return nodes;
     }
 
+    public String startEnvironmentTaskName() {
+        return "start" + capitalize(getName());
+    }
+
+    public String stopEnvironmentTaskName() {
+        return "stop" + capitalize(getName());
+    }
+
     public String createDatabaseTaskName() {
         return "create" + capitalize(getName()) + "Database";
     }
