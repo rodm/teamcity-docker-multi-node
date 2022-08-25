@@ -49,6 +49,7 @@ public abstract class CreateDockerDatabase extends DockerTask {
         ContainerConfiguration configuration = ContainerConfiguration.builder()
                 .image(getImageName().get())
                 .name(getContainerName().get())
+                .environment("MYSQL_ROOT_PASSWORD", "admin")
                 .environment("MYSQL_DATABASE", "teamcity")
                 .environment("MYSQL_USER", getUsername().get())
                 .environment("MYSQL_PASSWORD", getPassword().get())
