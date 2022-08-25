@@ -30,7 +30,7 @@ configurations {
 }
 
 dependencies {
-    database 'mysql:mysql-connector-java:8.0.29'
+    database 'mysql:mysql-connector-java:8.0.30'
     teamcityPlugins project(path: ':teamcity-plugin', configuration: 'plugin')
 }
 
@@ -39,10 +39,10 @@ teamcity {
         baseDataDir = "$rootDir/data"
 
         register('teamcity2022.04', MultiNodeEnvironment) {
-            version = '2022.04'
+            version = '2022.04.3'
             plugins = configurations.teamcityPlugins
             database {
-                image = 'mysql/mysql-server:5.7'
+                image = 'mysql/mysql-server:8.0'
                 name = 'tc-2022.04-db'
                 url = 'jdbc:mysql://localhost:3306/teamcity'
                 username = 'teamcity'
