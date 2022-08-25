@@ -192,7 +192,7 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                     task.setGroup(TEAMCITY_GROUP);
                     task.getVersion().set(environment.getVersion());
                     task.getDataDir().set(environment.getDataDirProperty());
-                    task.getLogsDir().set(environment.getDataDirProperty().map(path -> path + "/" + node.getName() + "/logs"));
+                    task.getLogsDir().set(environment.getDataDirProperty().map(path -> path + "/logs/" + node.getName()));
                     task.getServerOptions().set(node.getServerOptionsProvider());
                     task.getImageName().set(environment.getServerImageProperty());
                     task.getContainerName().set(containerName);
