@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.github.rodm.teamcity.TeamCityEnvironmentsPlugin.DOCKER_CONFIGURATION_NAME;
 import static com.github.rodm.teamcity.TeamCityPlugin.ENVIRONMENTS_PLUGIN_ID;
 import static com.github.rodm.teamcity.TeamCityPlugin.TEAMCITY_GROUP;
 import static com.github.rodm.teamcity.TeamCityServerPlugin.SERVER_PLUGIN_TASK_NAME;
@@ -88,7 +89,7 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
 
                 final TaskContainer tasks = project.getTasks();
                 tasks.withType(DockerTask.class, task ->
-                        task.setClasspath(project.getConfigurations().getByName("docker")));
+                        task.setClasspath(project.getConfigurations().getByName(DOCKER_CONFIGURATION_NAME)));
             }
 
             private void configureDeploymentTasks(Project project, BaseTeamCityEnvironment environment) {
