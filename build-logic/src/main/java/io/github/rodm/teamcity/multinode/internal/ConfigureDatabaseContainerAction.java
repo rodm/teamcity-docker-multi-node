@@ -18,8 +18,6 @@ package io.github.rodm.teamcity.multinode.internal;
 import com.github.rodm.teamcity.docker.DockerOperations;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
 import org.gradle.api.provider.Property;
 import org.gradle.workers.WorkAction;
 import org.gradle.workers.WorkParameters;
@@ -32,8 +30,6 @@ import java.nio.file.Files;
 import java.util.Properties;
 
 public abstract class ConfigureDatabaseContainerAction implements WorkAction<ConfigureDatabaseContainerAction.ConfigureContainerParameters> {
-
-    private static final Logger LOGGER = Logging.getLogger(ConfigureDatabaseContainerAction.class);
 
     public interface ConfigureContainerParameters extends WorkParameters {
         Property<String> getContainerName();
