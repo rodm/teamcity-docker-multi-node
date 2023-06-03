@@ -38,12 +38,12 @@ teamcity {
     environments {
         baseDataDir = "$rootDir/data"
 
-        register('teamcity2022.04', MultiNodeEnvironment) {
-            version = '2022.04.3'
+        register('teamcity2023.05', MultiNodeEnvironment) {
+            version = '2023.05'
             plugins = configurations.teamcityPlugins
             database {
                 image = 'mysql/mysql-server:8.0'
-                name = 'tc-2022.04-db'
+                name = 'tc-2023.05-db'
                 url = 'jdbc:mysql://localhost:3306/teamcity'
                 username = 'teamcity'
                 password = 'teamcity'
