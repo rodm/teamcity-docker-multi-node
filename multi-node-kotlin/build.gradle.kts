@@ -28,7 +28,7 @@ val database by configurations.creating
 val teamcityPlugins by configurations.creating
 
 dependencies {
-    database ("mysql:mysql-connector-java:8.0.30")
+    database ("com.mysql:mysql-connector-j:8.4.0")
     teamcityPlugins (project(path = ":teamcity-plugin", configuration = "plugin"))
 }
 
@@ -36,12 +36,12 @@ teamcity {
     environments {
         baseDataDir = "$rootDir/data"
 
-        register("teamcity2023.05", MultiNodeEnvironment::class.java) {
-            version = "2023.05"
+        register("teamcity2024.03", MultiNodeEnvironment::class.java) {
+            version = "2024.03.1"
             plugins = configurations["teamcityPlugins"]
             database {
                 image = "mysql/mysql-server:8.0"
-                name = "tc-2023.05-db"
+                name = "tc-2024.03-db"
                 url = "jdbc:mysql://localhost:3306/teamcity"
                 username = "teamcity"
                 password = "teamcity"

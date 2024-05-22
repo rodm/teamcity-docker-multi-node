@@ -1,12 +1,13 @@
 = Example plugin development with TeamCity Secondary Nodes
 :uri-teamcity: https://www.jetbrains.com/teamcity/[TeamCity]
-:uri-teamcity-docs: https://www.jetbrains.com/help/teamcity/2020.1
+:uri-teamcity-docs: https://www.jetbrains.com/help/teamcity/2024.03
 :uri-multiple-nodes: {uri-teamcity-docs}/multinode-setup.html
 :uri-secondary-node: {uri-teamcity-docs}/configuring-secondary-node.html[Secondary Node]
 :uri-gradle-teamcity-plugin: https://github.com/rodm/gradle-teamcity-plugin
 :uri-environments-plugin: {uri-gradle-teamcity-plugin}/blob/main/README.adoc#teamcity-environments-plugin
 :uri-teamcity-nodes: http://localhost:8211/admin/admin.html?item=nodesConfiguration
 :uri-teamcity-plugins: http://localhost:8211/admin/admin.html?item=plugins
+:teamcity-version: 2024.03.1
 
 This project demonstrates how to build and test a TeamCity plugin with {uri-multiple-nodes}[multiple nodes] and
 how to extend the Gradle TeamCity {uri-environments-plugin}[Environments] plugin.
@@ -22,7 +23,7 @@ Gradle plugin in `build-logic` to deploy the TeamCity plugin from the `teamcity-
 * `teamcity-plugin` a project that implements a simple TeamCity plugin to be deployed to the multi node environment.
 
 The example multi node environments in `multi-node-groovy` and `multi-node-kotlin` configure an environment using
-TeamCity version 2022.04.3 with 2 nodes, `node1` on port `8211` and `node2` on port `8311` and a database using MySQL.
+TeamCity version {teamcity-version} with 2 nodes, `node1` on port `8211` and `node2` on port `8311` and a database using MySQL.
 The example environment can be seen in the following link:multi-node-groovy/build.gradle[Groovy] and
 link:multi-node-kotlin/build.gradle.kts[Kotlin] build scripts.
 
