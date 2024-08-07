@@ -169,11 +169,11 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                 Provider<String> mainNodeContainerName = environment.getServerNameProperty().map(cn -> cn + "-" + mainNode.getName());
                 tasks.register(environment.startAgentTaskName(), StartDockerAgent.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
-                    task.getVersion().set(environment.getVersion());
                     task.getDataDir().set(environment.getDataDirProperty());
                     task.getConfigDir().set(environment.getDataDirProperty().map(path -> path + "/agent/conf"));
                     task.getAgentOptions().set(environment.getAgentOptionsProvider());
                     task.getImageName().set(environment.getAgentImageProperty());
+                    task.getImageTag().set(environment.getAgentTagProperty().orElse(environment.getVersion()));
                     task.getContainerName().set(environment.getAgentNameProperty());
                     task.getServerContainerName().set(mainNodeContainerName);
                     task.mustRunAfter(tasks.named(environment.startNodeTaskName(mainNode.getName())));
@@ -191,11 +191,11 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                 Provider<String> containerName = environment.getServerNameProperty().map(cn -> cn + "-" + node.getName());
                 tasks.register(environment.startNodeTaskName(node.getName()), StartDockerServer.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
-                    task.getVersion().set(environment.getVersion());
                     task.getDataDir().set(environment.getDataDirProperty());
                     task.getLogsDir().set(environment.getDataDirProperty().map(path -> path + "/logs/" + node.getName()));
                     task.getServerOptions().set(node.getServerOptionsProvider());
                     task.getImageName().set(environment.getServerImageProperty());
+                    task.getImageTag().set(environment.getServerTagProperty().orElse(environment.getVersion()));
                     task.getContainerName().set(containerName);
                     task.getPort().set(node.getPort());
                     task.doFirst(t -> project.mkdir(environment.getDataDir()));

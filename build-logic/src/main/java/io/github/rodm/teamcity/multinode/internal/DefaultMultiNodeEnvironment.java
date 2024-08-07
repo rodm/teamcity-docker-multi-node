@@ -34,8 +34,10 @@ import javax.inject.Inject;
 public class DefaultMultiNodeEnvironment extends BaseTeamCityEnvironment implements MultiNodeEnvironment {
 
     private final Property<String> serverImage;
-    private final Property<String> agentImage;
+    private final Property<String> serverTag;
     private final Property<String> serverName;
+    private final Property<String> agentImage;
+    private final Property<String> agentTag;
     private final Property<String> agentName;
 
     private DatabaseConfiguration database;
@@ -45,8 +47,10 @@ public class DefaultMultiNodeEnvironment extends BaseTeamCityEnvironment impleme
     public DefaultMultiNodeEnvironment(String name, DefaultTeamCityEnvironments environments, ObjectFactory objects) {
         super(name, environments, objects);
         this.serverImage = objects.property(String.class).convention("jetbrains/teamcity-server");
-        this.agentImage = objects.property(String.class).convention("jetbrains/teamcity-agent");
+        this.serverTag = objects.property(String.class);
         this.serverName = objects.property(String.class).convention("teamcity-server");
+        this.agentImage = objects.property(String.class).convention("jetbrains/teamcity-agent");
+        this.agentTag = objects.property(String.class);
         this.agentName = objects.property(String.class).convention("teamcity-agent");
 
         NamedDomainObjectFactory<NodeConfiguration> factory = n ->
@@ -67,6 +71,30 @@ public class DefaultMultiNodeEnvironment extends BaseTeamCityEnvironment impleme
         return gradleProperty(propertyName("serverImage")).orElse(serverImage);
     }
 
+    public String getServerTag() {
+        return getServerTagProperty().get();
+    }
+
+    public void setServerTag(String serverTag) {
+        this.serverTag.set(serverTag);
+    }
+
+    public Provider<String> getServerTagProperty() {
+        return gradleProperty(propertyName("serverTag")).orElse(serverTag);
+    }
+
+    public String getServerName() {
+        return getServerNameProperty().get();
+    }
+
+    public void setServerName(String serverName) {
+        this.serverName.set(serverName);
+    }
+
+    public Provider<String> getServerNameProperty() {
+        return gradleProperty(propertyName("serverName")).orElse(serverName);
+    }
+
     public String getAgentImage() {
         return getAgentImageProperty().get();
     }
@@ -80,16 +108,16 @@ public class DefaultMultiNodeEnvironment extends BaseTeamCityEnvironment impleme
         return gradleProperty(propertyName("agentImage")).orElse(agentImage);
     }
 
-    public String getServerName() {
-        return getServerNameProperty().get();
+    public String getAgentTag() {
+        return getAgentTagProperty().get();
     }
 
-    public void setServerName(String serverName) {
-        this.serverName.set(serverName);
+    public void setAgentTag(String agentTag) {
+        this.agentTag.set(agentTag);
     }
 
-    public Provider<String> getServerNameProperty() {
-        return gradleProperty(propertyName("serverName")).orElse(serverName);
+    public Provider<String> getAgentTagProperty() {
+        return gradleProperty(propertyName("agentTag")).orElse(agentTag);
     }
 
     public String getAgentName() {

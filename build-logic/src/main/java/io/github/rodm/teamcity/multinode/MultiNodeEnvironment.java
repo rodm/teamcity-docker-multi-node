@@ -24,11 +24,17 @@ public interface MultiNodeEnvironment extends TeamCityEnvironment {
     String getServerImage();
     void setServerImage(String serverImage);
 
-    String getAgentImage();
-    void setAgentImage(String agentImage);
+    String getServerTag();
+    void setServerTag(String serverTag);
 
     String getServerName();
     void setServerName(String serverName);
+
+    String getAgentImage();
+    void setAgentImage(String agentImage);
+
+    String getAgentTag();
+    void setAgentTag(String agentTag);
 
     String getAgentName();
     void setAgentName(String agentName);
