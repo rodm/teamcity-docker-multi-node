@@ -36,12 +36,13 @@ teamcity {
     environments {
         baseDataDir = "$rootDir/data"
 
-        register("teamcity2024.03", MultiNodeEnvironment::class.java) {
-            version = "2024.03.1"
+        register("teamcity2024.07", MultiNodeEnvironment::class.java) {
+            version = "2024.07.1"
             plugins = configurations["teamcityPlugins"]
+            //agentTag = "2024.07.1-linux-sudo"
             database {
                 image = "mysql/mysql-server:8.0"
-                name = "tc-2024.03-db"
+                name = "tc-2024.07-db"
                 url = "jdbc:mysql://localhost:3306/teamcity"
                 username = "teamcity"
                 password = "teamcity"
