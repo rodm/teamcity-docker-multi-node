@@ -36,7 +36,7 @@ teamcity {
     environments {
         baseDataDir = "$rootDir/data"
 
-        register("teamcity2024.12", MultiNodeEnvironment::class.java) {
+        register("teamcity", MultiNodeEnvironment::class.java) {
             version = "2024.12"
             plugins = configurations["teamcityPlugins"]
             //agentTag = "2024.12-linux-sudo"
