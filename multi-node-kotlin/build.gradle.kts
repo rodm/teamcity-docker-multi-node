@@ -28,7 +28,7 @@ val database by configurations.creating
 val teamcityPlugins by configurations.creating
 
 dependencies {
-    database ("com.mysql:mysql-connector-j:8.4.0")
+    database ("com.mysql:mysql-connector-j:9.1.0")
     teamcityPlugins (project(path = ":teamcity-plugin", configuration = "plugin"))
 }
 
@@ -41,7 +41,7 @@ teamcity {
             plugins = configurations["teamcityPlugins"]
             //agentTag = "2024.12-linux-sudo"
             database {
-                image = "mysql/mysql-server:8.0"
+                image = "mysql:9.1"
                 name = "tc-2024.12-db"
                 url = "jdbc:mysql://localhost:3306/teamcity"
                 username = "teamcity"
