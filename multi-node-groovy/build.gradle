@@ -44,7 +44,7 @@ teamcity {
             //agentTag = '2025.03.2-linux-sudo'
             database {
                 image = 'mysql:9.1'
-                name = 'tc-2025.03-db'
+                name = 'teamcity-database'
                 url = 'jdbc:mysql://localhost:3306/teamcity'
                 username = 'teamcity'
                 password = 'teamcity'
