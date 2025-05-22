@@ -160,10 +160,6 @@ public class DefaultMultiNodeEnvironment extends BaseTeamCityEnvironment impleme
         return "stop" + capitalize(getName());
     }
 
-    public String createDatabaseTaskName() {
-        return "create" + capitalize(getName()) + "Database";
-    }
-
     public String startDatabaseTaskName() {
         return "start" + capitalize(getName()) + "Database";
     }

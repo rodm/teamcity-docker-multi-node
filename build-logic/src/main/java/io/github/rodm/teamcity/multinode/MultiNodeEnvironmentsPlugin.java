@@ -33,7 +33,6 @@ import com.github.rodm.teamcity.tasks.Undeploy;
 import io.github.rodm.teamcity.multinode.internal.DefaultMultiNodeEnvironment;
 import io.github.rodm.teamcity.multinode.internal.DefaultNodeConfiguration;
 import io.github.rodm.teamcity.multinode.tasks.ConfigureDatabase;
-import io.github.rodm.teamcity.multinode.tasks.CreateDockerDatabase;
 import io.github.rodm.teamcity.multinode.tasks.StartDockerDatabase;
 import io.github.rodm.teamcity.multinode.tasks.StopDockerDatabase;
 import org.gradle.api.Action;
@@ -143,16 +142,13 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                     task.getDriverDir().set(project.file(driverDir));
                     task.getDatabaseProperties().set(project.file(databaseProperties));
                 });
-                tasks.register(environment.createDatabaseTaskName(), CreateDockerDatabase.class, task -> {
+                tasks.register(environment.startDatabaseTaskName(), StartDockerDatabase.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
                     task.getImageName().set(database.getImage());
                     task.getContainerName().set(database.getName());
                     task.getUsername().set(database.getUsername());
                     task.getPassword().set(database.getPassword());
-                });
-                tasks.register(environment.startDatabaseTaskName(), StartDockerDatabase.class, task -> {
-                    task.setGroup(TEAMCITY_GROUP);
-                    task.getContainerName().set(database.getName());
+                    task.getDataDir().set(environment.getDataDirProperty().map(path -> path + "/database"));
                 });
                 tasks.register(environment.stopDatabaseTaskName(), StopDockerDatabase.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
@@ -236,8 +232,6 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                         task.dependsOn(tasks.named(ASSEMBLE_TASK_NAME)));
                 tasks.named(environment.configureDatabaseTaskName()).configure(task ->
                         task.dependsOn(tasks.named(environment.startDatabaseTaskName())));
-                tasks.named(environment.startDatabaseTaskName()).configure(task ->
-                        task.dependsOn(tasks.named(environment.createDatabaseTaskName())));
 
                 tasks.named(environment.stopEnvironmentTaskName()).configure(task ->
                         task.dependsOn(tasks.named(environment.undeployTaskName())));
