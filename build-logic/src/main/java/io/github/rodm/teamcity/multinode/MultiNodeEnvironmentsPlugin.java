@@ -148,6 +148,7 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                     task.getContainerName().set(database.getName());
                     task.getUsername().set(database.getUsername());
                     task.getPassword().set(database.getPassword());
+                    task.getEnvironmentVariables().set(database.getOptions().getEnvironmentVariables());
                     task.getDataDir().set(environment.getDataDirProperty().map(path -> path + "/database"));
                 });
                 tasks.register(environment.stopDatabaseTaskName(), StopDockerDatabase.class, task -> {

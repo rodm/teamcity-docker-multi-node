@@ -15,21 +15,26 @@
  */
 package io.github.rodm.teamcity.multinode.internal;
 
+import io.github.rodm.teamcity.multinode.DatabaseConfiguration;
 import io.github.rodm.teamcity.multinode.DatabaseOptions;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MySQLDatabaseOptions implements DatabaseOptions {
 
     private final Property<String> image;
     private final Property<String> url;
+    private final DatabaseConfiguration configuration;
 
     @Inject
-    public MySQLDatabaseOptions(ObjectFactory factory) {
+    public MySQLDatabaseOptions(ObjectFactory factory, DatabaseConfiguration configuration) {
         this.image = factory.property(String.class).convention("");
         this.url = factory.property(String.class).convention("");
+        this.configuration = configuration;
     }
 
     @Override
@@ -50,5 +55,15 @@ public class MySQLDatabaseOptions implements DatabaseOptions {
     @Override
     public void setUrl(String url) {
         this.url.set(url);
+    }
+
+    @Override
+    public Map<String, String> getEnvironmentVariables() {
+        Map<String, String> variables = new HashMap<>();
+        variables.put("MYSQL_ROOT_PASSWORD", "admin123");
+        variables.put("MYSQL_DATABASE", "teamcity");
+        variables.put("MYSQL_USER", configuration.getUsername());
+        variables.put("MYSQL_PASSWORD", configuration.getPassword());
+        return variables;
     }
 }

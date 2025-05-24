@@ -15,10 +15,14 @@
  */
 package io.github.rodm.teamcity.multinode;
 
+import java.util.Map;
+
 public interface DatabaseOptions {
     String getImage();
     void setImage(String image);
 
     String getUrl();
     void setUrl(String url);
+
+    Map<String, String> getEnvironmentVariables();
 }

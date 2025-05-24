@@ -39,7 +39,7 @@ public class DefaultDatabaseConfiguration implements DatabaseConfiguration {
         this.username = factory.property(String.class);
         this.password = factory.property(String.class);
         this.driver = factory.fileCollection();
-        this.options = factory.newInstance(MySQLDatabaseOptions.class);
+        this.options = factory.newInstance(MySQLDatabaseOptions.class, this);
     }
 
     @Override

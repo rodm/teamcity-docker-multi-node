@@ -19,6 +19,7 @@ import com.github.rodm.teamcity.docker.ContainerConfiguration;
 import com.github.rodm.teamcity.docker.CreateContainerAction;
 import com.github.rodm.teamcity.docker.DockerTask;
 import com.github.rodm.teamcity.docker.StartContainerAction;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
@@ -26,6 +27,7 @@ import org.gradle.workers.WorkQueue;
 import org.gradle.workers.WorkerExecutor;
 
 import javax.inject.Inject;
+import java.util.Map;
 
 public abstract class StartDockerDatabase extends DockerTask {
 
@@ -48,18 +50,21 @@ public abstract class StartDockerDatabase extends DockerTask {
     @Input
     public abstract Property<String> getDataDir();
 
+    @Input
+    public abstract MapProperty<String, String> getEnvironmentVariables();
+
     @TaskAction
     void startDatabase() {
         ContainerConfiguration configuration = ContainerConfiguration.builder()
                 .image(getImageName().get())
                 .name(getContainerName().get())
-                .environment("MYSQL_ROOT_PASSWORD", "admin")
-                .environment("MYSQL_DATABASE", "teamcity")
-                .environment("MYSQL_USER", getUsername().get())
-                .environment("MYSQL_PASSWORD", getPassword().get())
                 .bind(getDataDir().get(), "/var/lib/mysql")
                 .bindPort("3306", "3306")
                 .autoRemove();
+        Map<String, String> variables = getEnvironmentVariables().get();
+        for (Map.Entry<String, String> entry : variables.entrySet()) {
+            configuration.environment(entry.getKey(), entry.getValue());
+        }
 
         WorkQueue queue = executor.classLoaderIsolation(spec -> spec.getClasspath().from(getClasspath()));
         queue.submit(CreateContainerAction.class, params -> {
