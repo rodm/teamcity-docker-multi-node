@@ -135,7 +135,7 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                 tasks.register(environment.configureDatabaseTaskName(), ConfigureDatabase.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
                     task.getContainerName().set(database.getName());
-                    task.getDatabaseUrl().set(database.getUrl());
+                    task.getDatabaseUrl().set(database.getOptions().getUrl());
                     task.getUsername().set(database.getUsername());
                     task.getPassword().set(database.getPassword());
                     task.getDriver().from(database.getDriver());
@@ -144,7 +144,7 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                 });
                 tasks.register(environment.startDatabaseTaskName(), StartDockerDatabase.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
-                    task.getImageName().set(database.getImage());
+                    task.getImageName().set(database.getOptions().getImage());
                     task.getContainerName().set(database.getName());
                     task.getUsername().set(database.getUsername());
                     task.getPassword().set(database.getPassword());

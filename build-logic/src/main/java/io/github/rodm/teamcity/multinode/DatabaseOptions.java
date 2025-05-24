@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rod MacKenzie
+ * Copyright 2025 Rod MacKenzie
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +15,10 @@
  */
 package io.github.rodm.teamcity.multinode;
 
-import org.gradle.api.Action;
+public interface DatabaseOptions {
+    String getImage();
+    void setImage(String image);
 
-public interface DatabaseConfiguration {
-    DatabaseOptions getOptions();
-    void useMySQL(Action<? super DatabaseOptions> configure);
-
-    String getName();
-    void setName(String name);
-
-    String getUsername();
-    void setUsername(String username);
-
-    String getPassword();
-    void setPassword(String password);
-
-    Object getDriver();
-    void setDriver(Object driver);
-    void driver(Object driver);
+    String getUrl();
+    void setUrl(String url);
 }

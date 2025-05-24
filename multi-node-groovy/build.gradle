@@ -43,9 +43,11 @@ teamcity {
             plugins = configurations.teamcityPlugins
             //agentTag = '2025.03.2-linux-sudo'
             database {
-                image = 'mysql:9.1'
+                useMySQL {
+                    image = 'mysql:9.1'
+                    url = 'jdbc:mysql://localhost:3306/teamcity'
+                }
                 name = 'teamcity-database'
-                url = 'jdbc:mysql://localhost:3306/teamcity'
                 username = 'teamcity'
                 password = 'teamcity'
                 driver = configurations.database

@@ -16,6 +16,8 @@
 package io.github.rodm.teamcity.multinode.internal;
 
 import io.github.rodm.teamcity.multinode.DatabaseConfiguration;
+import io.github.rodm.teamcity.multinode.DatabaseOptions;
+import org.gradle.api.Action;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
@@ -24,31 +26,30 @@ import javax.inject.Inject;
 
 public class DefaultDatabaseConfiguration implements DatabaseConfiguration {
 
-    private final Property<String> image;
     private final Property<String> name;
-    private final Property<String> url;
     private final Property<String> username;
     private final Property<String> password;
     private final ConfigurableFileCollection driver;
 
+    private final DatabaseOptions options;
+
     @Inject
     public DefaultDatabaseConfiguration(ObjectFactory factory) {
-        this.image = factory.property(String.class);
         this.name = factory.property(String.class);
-        this.url = factory.property(String.class);
         this.username = factory.property(String.class);
         this.password = factory.property(String.class);
         this.driver = factory.fileCollection();
+        this.options = factory.newInstance(MySQLDatabaseOptions.class);
     }
 
     @Override
-    public String getImage() {
-        return image.get();
+    public DatabaseOptions getOptions() {
+        return options;
     }
 
     @Override
-    public void setImage(String image) {
-        this.image.set(image);
+    public void useMySQL(Action<? super DatabaseOptions> configure) {
+        configure.execute(options);
     }
 
     @Override
@@ -59,16 +60,6 @@ public class DefaultDatabaseConfiguration implements DatabaseConfiguration {
     @Override
     public void setName(String name) {
         this.name.set(name);
-    }
-
-    @Override
-    public String getUrl() {
-        return url.get();
-    }
-
-    @Override
-    public void setUrl(String url) {
-        this.url.set(url);
     }
 
     @Override
