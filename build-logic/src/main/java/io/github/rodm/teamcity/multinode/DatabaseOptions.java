@@ -25,4 +25,7 @@ public interface DatabaseOptions {
     void setUrl(String url);
 
     Map<String, String> getEnvironmentVariables();
+
+    String getDatabasePath();
+    int getDatabasePort();
 }

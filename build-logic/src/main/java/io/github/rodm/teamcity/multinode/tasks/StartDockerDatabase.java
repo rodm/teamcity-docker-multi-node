@@ -53,13 +53,20 @@ public abstract class StartDockerDatabase extends DockerTask {
     @Input
     public abstract MapProperty<String, String> getEnvironmentVariables();
 
+    @Input
+    public abstract Property<String> getDatabasePath();
+
+    @Input
+    public abstract Property<Integer> getDatabasePort();
+
     @TaskAction
     void startDatabase() {
+        String port = getDatabasePort().get().toString();
         ContainerConfiguration configuration = ContainerConfiguration.builder()
                 .image(getImageName().get())
                 .name(getContainerName().get())
-                .bind(getDataDir().get(), "/var/lib/mysql")
-                .bindPort("3306", "3306")
+                .bind(getDataDir().get(), getDatabasePath().get())
+                .bindPort(port, port)
                 .autoRemove();
         Map<String, String> variables = getEnvironmentVariables().get();
         for (Map.Entry<String, String> entry : variables.entrySet()) {

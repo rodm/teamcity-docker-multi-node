@@ -66,4 +66,14 @@ public class MySQLDatabaseOptions implements DatabaseOptions {
         variables.put("MYSQL_PASSWORD", configuration.getPassword());
         return variables;
     }
+
+    @Override
+    public String getDatabasePath() {
+        return "/var/lib/mysql";
+    }
+
+    @Override
+    public int getDatabasePort() {
+        return 3306;
+    }
 }
