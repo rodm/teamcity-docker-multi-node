@@ -138,6 +138,7 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                     task.getDatabaseUrl().set(database.getOptions().getUrl());
                     task.getUsername().set(database.getUsername());
                     task.getPassword().set(database.getPassword());
+                    task.getTestOnBorrow().set(database.getOptions().getTestOnBorrow());
                     task.getDriver().from(database.getDriver());
                     task.getDriverDir().set(project.file(driverDir));
                     task.getDatabaseProperties().set(project.file(databaseProperties));

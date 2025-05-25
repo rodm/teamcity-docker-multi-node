@@ -36,6 +36,7 @@ public abstract class ConfigureDatabaseContainerAction implements WorkAction<Con
         Property<String> getDatabaseUrl();
         Property<String> getUsername();
         Property<String> getPassword();
+        Property<Boolean> getTestOnBorrow();
         RegularFileProperty getDatabaseProperties();
     }
 
@@ -52,6 +53,7 @@ public abstract class ConfigureDatabaseContainerAction implements WorkAction<Con
             props.setProperty("connectionProperties.user", parameters.getUsername().get());
             props.setProperty("connectionProperties.password", parameters.getPassword().get());
             props.setProperty("connectionUrl", databaseUrl);
+            props.setProperty("testOnBorrow", parameters.getTestOnBorrow().get().toString());
             props.store(writer, null);
         }
         catch (IOException e) {

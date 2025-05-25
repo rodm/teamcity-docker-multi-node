@@ -58,6 +58,11 @@ public class MySQLDatabaseOptions implements DatabaseOptions {
     }
 
     @Override
+    public Boolean getTestOnBorrow() {
+        return Boolean.TRUE;
+    }
+
+    @Override
     public Map<String, String> getEnvironmentVariables() {
         Map<String, String> variables = new HashMap<>();
         variables.put("MYSQL_ROOT_PASSWORD", "admin123");

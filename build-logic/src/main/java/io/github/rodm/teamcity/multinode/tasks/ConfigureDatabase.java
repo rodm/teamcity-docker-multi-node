@@ -52,6 +52,9 @@ public abstract class ConfigureDatabase extends DockerTask {
     @Input
     public abstract Property<String> getPassword();
 
+    @Input
+    public abstract Property<Boolean> getTestOnBorrow();
+
     @InputFiles
     public abstract ConfigurableFileCollection getDriver();
 
@@ -69,6 +72,7 @@ public abstract class ConfigureDatabase extends DockerTask {
             params.getDatabaseUrl().set(getDatabaseUrl());
             params.getUsername().set(getUsername());
             params.getPassword().set(getPassword());
+            params.getTestOnBorrow().set(getTestOnBorrow());
             params.getDatabaseProperties().set(getDatabaseProperties());
         });
         queue.await();

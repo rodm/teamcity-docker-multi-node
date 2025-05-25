@@ -24,6 +24,7 @@ public interface DatabaseOptions {
     String getUrl();
     void setUrl(String url);
 
+    Boolean getTestOnBorrow();
     Map<String, String> getEnvironmentVariables();
 
     String getDatabasePath();
