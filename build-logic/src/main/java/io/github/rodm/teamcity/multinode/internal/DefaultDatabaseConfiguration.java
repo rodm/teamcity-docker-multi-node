@@ -50,13 +50,24 @@ public class DefaultDatabaseConfiguration implements DatabaseConfiguration {
     }
 
     @Override
+    public void useMySQL() {
+        options = factory.newInstance(MySQLDatabaseOptions.class, this);
+    }
+
+    @Override
     public void useMySQL(Action<? super DatabaseOptions> configure) {
+        useMySQL();
         configure.execute(options);
     }
 
     @Override
+    public void usePostgreSQL() {
+        options = factory.newInstance(PostgreSQLDatabaseOptions.class, this);
+    }
+
+    @Override
     public void usePostgreSQL(Action<? super DatabaseOptions> configure) {
-        this.options = factory.newInstance(PostgreSQLDatabaseOptions.class, this);
+        usePostgreSQL();
         configure.execute(options);
     }
 

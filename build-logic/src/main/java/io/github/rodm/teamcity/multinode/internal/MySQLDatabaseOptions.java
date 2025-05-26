@@ -32,8 +32,8 @@ public class MySQLDatabaseOptions implements DatabaseOptions {
 
     @Inject
     public MySQLDatabaseOptions(ObjectFactory factory, DatabaseConfiguration configuration) {
-        this.image = factory.property(String.class).convention("");
-        this.url = factory.property(String.class).convention("");
+        this.image = factory.property(String.class).convention("mysql:9.1");
+        this.url = factory.property(String.class).convention("jdbc:mysql://localhost:3306/teamcity");
         this.configuration = configuration;
     }
 
