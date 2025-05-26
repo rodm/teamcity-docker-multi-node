@@ -20,6 +20,7 @@ import org.gradle.api.Action;
 public interface DatabaseConfiguration {
     DatabaseOptions getOptions();
     void useMySQL(Action<? super DatabaseOptions> configure);
+    void usePostgreSQL(Action<? super DatabaseOptions> configure);
 
     String getName();
     void setName(String name);

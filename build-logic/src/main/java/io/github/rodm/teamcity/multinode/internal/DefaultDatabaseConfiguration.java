@@ -26,15 +26,17 @@ import javax.inject.Inject;
 
 public class DefaultDatabaseConfiguration implements DatabaseConfiguration {
 
+    private final ObjectFactory factory;
     private final Property<String> name;
     private final Property<String> username;
     private final Property<String> password;
     private final ConfigurableFileCollection driver;
 
-    private final DatabaseOptions options;
+    private DatabaseOptions options;
 
     @Inject
     public DefaultDatabaseConfiguration(ObjectFactory factory) {
+        this.factory = factory;
         this.name = factory.property(String.class);
         this.username = factory.property(String.class);
         this.password = factory.property(String.class);
@@ -49,6 +51,12 @@ public class DefaultDatabaseConfiguration implements DatabaseConfiguration {
 
     @Override
     public void useMySQL(Action<? super DatabaseOptions> configure) {
+        configure.execute(options);
+    }
+
+    @Override
+    public void usePostgreSQL(Action<? super DatabaseOptions> configure) {
+        this.options = factory.newInstance(PostgreSQLDatabaseOptions.class, this);
         configure.execute(options);
     }
 
