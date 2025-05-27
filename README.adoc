@@ -1,13 +1,12 @@
 = Example plugin development with TeamCity Secondary Nodes
 :uri-teamcity: https://www.jetbrains.com/teamcity/[TeamCity]
-:uri-teamcity-docs: https://www.jetbrains.com/help/teamcity/2024.03
+:uri-teamcity-docs: https://www.jetbrains.com/help/teamcity/2025.03
 :uri-multiple-nodes: {uri-teamcity-docs}/multinode-setup.html
-:uri-secondary-node: {uri-teamcity-docs}/configuring-secondary-node.html[Secondary Node]
 :uri-gradle-teamcity-plugin: https://github.com/rodm/gradle-teamcity-plugin
 :uri-environments-plugin: {uri-gradle-teamcity-plugin}/blob/main/README.adoc#teamcity-environments-plugin
 :uri-teamcity-nodes: http://localhost:8211/admin/admin.html?item=nodesConfiguration
 :uri-teamcity-plugins: http://localhost:8211/admin/admin.html?item=plugins
-:teamcity-version: 2024.03.1
+:teamcity-version: 2025.03.2
 
 This project demonstrates how to build and test a TeamCity plugin with {uri-multiple-nodes}[multiple nodes] and
 how to extend the Gradle TeamCity {uri-environments-plugin}[Environments] plugin.
@@ -23,7 +22,9 @@ Gradle plugin in `build-logic` to deploy the TeamCity plugin from the `teamcity-
 * `teamcity-plugin` a project that implements a simple TeamCity plugin to be deployed to the multi node environment.
 
 The example multi node environments in `multi-node-groovy` and `multi-node-kotlin` configure an environment using
-TeamCity version {teamcity-version} with 2 nodes, `node1` on port `8211` and `node2` on port `8311` and a database using MySQL.
+TeamCity version {teamcity-version} with 2 nodes, `node1` on port `8211` and `node2` on port `8311` and a database.
+The plugin supports the MySQL and PostgreSQL databases, they can be selected with the `useMySQL` and
+`usePostgreSQL` functions.
 The example environment can be seen in the following link:multi-node-groovy/build.gradle[Groovy] and
 link:multi-node-kotlin/build.gradle.kts[Kotlin] build scripts.
 
@@ -32,16 +33,16 @@ The `teamcity-multinode-environments` plugin provides the following commands for
 * `deployTo<environment>`
 * `undeployFrom<environment>`
 
-* `create<environment>Database` a task to create the MySQL database to be used by the TeamCity nodes
-* `start<environment>Database` a task to start the MySQL database
-* `stop<environment>Database` a task to stop the MySQL database
+* `create<environment>Database` a task to create the database to be used by the TeamCity nodes
+* `start<environment>Database` a task to start the database
+* `stop<environment>Database` a task to stop the database
 * `configure<environment>Database` a task to configure the TeamCity database properties file and deploy the JDBC driver
 * `start<environment><node>Server` a task to start the TeamCity server node
 * `stop<environment><node>Server` a task to stop the TeamCity server node
 * `start<environment>Agent` a task to start the TeamCity Build Agent, the task requires the main server to be started
 * `stop<environment>Agent` a task to stop the TeamCity Build Agent
-* `start<environment>` a task to start the MySQL database, TeamCity Server nodes and Build Agent
-* `stop<environment>` a task to stop the MySQL database, TeamCity Server nodes and Build Agent
+* `start<environment>` a task to start the database, TeamCity Server nodes and Build Agent
+* `stop<environment>` a task to stop the database, TeamCity Server nodes and Build Agent
 
 The tasks to start and stop an environment are executed in order so that the database is started before the nodes
 and the build agent after the main node.
