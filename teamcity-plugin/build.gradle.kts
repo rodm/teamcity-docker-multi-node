@@ -16,7 +16,7 @@
 
 plugins {
     id ("java")
-    id ("io.github.rodm.teamcity-server") version "1.5.5"
+    id ("io.github.rodm.teamcity-server") version "1.5.6"
 }
 
 group = "com.github.rodm.teamcity"
