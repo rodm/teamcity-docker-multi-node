@@ -43,7 +43,6 @@ import org.gradle.api.Project;
 import org.gradle.api.Plugin;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.model.ObjectFactory;
-import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 
@@ -130,8 +129,6 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                 final TaskContainer tasks = project.getTasks();
 
                 DatabaseConfiguration database = environment.getDatabase();
-                Provider<String> driverDir = environment.getDataDirProperty().map(path -> path + "/lib/jdbc");
-                Provider<String> databaseProperties = environment.getDataDirProperty().map(path -> path + "/config/database.properties");
                 tasks.register(environment.configureDatabaseTaskName(), ConfigureDatabase.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
                     task.getContainerName().set(database.getName());
@@ -140,8 +137,8 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                     task.getPassword().set(database.getPassword());
                     task.getTestOnBorrow().set(database.getOptions().getTestOnBorrow());
                     task.getDriver().from(database.getDriver());
-                    task.getDriverDir().set(project.file(driverDir));
-                    task.getDatabaseProperties().set(project.file(databaseProperties));
+                    task.getDriverDir().set(project.file(environment.getDatabaseDriverDirProperty()));
+                    task.getDatabaseProperties().set(project.file(environment.getDatabasePropertiesProperty()));
                 });
                 tasks.register(environment.startDatabaseTaskName(), StartDockerDatabase.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
@@ -152,7 +149,7 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                     task.getEnvironmentVariables().set(database.getOptions().getEnvironmentVariables());
                     task.getDatabasePath().set(database.getOptions().getDatabasePath());
                     task.getDatabasePort().set(database.getOptions().getDatabasePort());
-                    task.getDataDir().set(environment.getDataDirProperty().map(path -> path + "/database"));
+                    task.getDataDir().set(environment.getDatabaseDirProperty());
                 });
                 tasks.register(environment.stopDatabaseTaskName(), StopDockerDatabase.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
@@ -165,17 +162,16 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
                 NamedDomainObjectContainer<NodeConfiguration> nodes = environment.getNodes();
                 nodes.configureEach(node -> configureNodeTasks(project, environment, (DefaultNodeConfiguration) node));
 
-                NodeConfiguration mainNode = getMainNode(nodes).orElseThrow(() -> new GradleException("No main node"));
-                Provider<String> mainNodeContainerName = environment.getServerNameProperty().map(cn -> cn + "-" + mainNode.getName());
+                DefaultNodeConfiguration mainNode = (DefaultNodeConfiguration) getMainNode(nodes).orElseThrow(() -> new GradleException("No main node"));
                 tasks.register(environment.startAgentTaskName(), StartDockerAgent.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
                     task.getDataDir().set(environment.getDataDirProperty());
-                    task.getConfigDir().set(environment.getDataDirProperty().map(path -> path + "/agent/conf"));
+                    task.getConfigDir().set(environment.getAgentConfigurationDirProperty());
                     task.getAgentOptions().set(environment.getAgentOptionsProvider());
                     task.getImageName().set(environment.getAgentImageProperty());
                     task.getImageTag().set(environment.getAgentTagProperty().orElse(environment.getVersion()));
                     task.getContainerName().set(environment.getAgentNameProperty());
-                    task.getServerContainerName().set(mainNodeContainerName);
+                    task.getServerContainerName().set(mainNode.getContainerName());
                     task.mustRunAfter(tasks.named(environment.startNodeTaskName(mainNode.getName())));
                 });
 
@@ -188,22 +184,21 @@ public class MultiNodeEnvironmentsPlugin implements Plugin<Project> {
             private void configureNodeTasks(Project project, DefaultMultiNodeEnvironment environment, DefaultNodeConfiguration node) {
                 final TaskContainer tasks = project.getTasks();
 
-                Provider<String> containerName = environment.getServerNameProperty().map(cn -> cn + "-" + node.getName());
                 tasks.register(environment.startNodeTaskName(node.getName()), StartDockerServer.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
                     task.getDataDir().set(environment.getDataDirProperty());
-                    task.getLogsDir().set(environment.getDataDirProperty().map(path -> path + "/logs/" + node.getName()));
+                    task.getLogsDir().set(node.getLogsDirProperty());
                     task.getServerOptions().set(node.getServerOptionsProvider());
                     task.getImageName().set(environment.getServerImageProperty());
                     task.getImageTag().set(environment.getServerTagProperty().orElse(environment.getVersion()));
-                    task.getContainerName().set(containerName);
+                    task.getContainerName().set(node.getContainerName());
                     task.getPort().set(node.getPort());
                     task.doFirst(t -> project.mkdir(environment.getDataDir()));
                 });
 
                 tasks.register(environment.stopNodeTaskName(node.getName()), StopDockerServer.class, task -> {
                     task.setGroup(TEAMCITY_GROUP);
-                    task.getContainerName().set(containerName);
+                    task.getContainerName().set(node.getContainerName());
                 });
             }
 

@@ -53,8 +53,8 @@ public class DefaultMultiNodeEnvironment extends BaseTeamCityEnvironment impleme
         this.agentTag = objects.property(String.class);
         this.agentName = objects.property(String.class).convention("teamcity-agent");
 
-        NamedDomainObjectFactory<NodeConfiguration> factory = n ->
-                objects.newInstance(DefaultNodeConfiguration.class, n);
+        NamedDomainObjectFactory<NodeConfiguration> factory = nodeName ->
+                objects.newInstance(DefaultNodeConfiguration.class, nodeName, this);
         nodes = objects.domainObjectContainer(NodeConfiguration.class, factory);
     }
 
@@ -131,7 +131,11 @@ public class DefaultMultiNodeEnvironment extends BaseTeamCityEnvironment impleme
     public Provider<String> getAgentNameProperty() {
         return gradleProperty(propertyName("agentName")).orElse(agentName);
     }
-    
+
+    public Provider<String> getAgentConfigurationDirProperty() {
+        return getDataDirProperty().map(path -> path + "/agent/conf");
+    }
+
     public void database(Action<DatabaseConfiguration> configuration) {
         if (database == null) {
             database = ((ExtensionAware) this).getExtensions().create(DatabaseConfiguration.class, "database", DefaultDatabaseConfiguration.class);
@@ -143,6 +147,18 @@ public class DefaultMultiNodeEnvironment extends BaseTeamCityEnvironment impleme
         return database;
     }
 
+    public Provider<String> getDatabaseDirProperty() {
+        return getDataDirProperty().map(path -> path + "/database");
+    }
+
+    public Provider<String> getDatabaseDriverDirProperty() {
+        return getDataDirProperty().map(path -> path + "/lib/jdbc");
+    }
+
+    public Provider<String> getDatabasePropertiesProperty() {
+        return getDataDirProperty().map(path -> path + "/config/database.properties");
+    }
+    
     public void nodes(Action<NamedDomainObjectContainer<NodeConfiguration>> configuration) {
         configuration.execute(nodes);
     }

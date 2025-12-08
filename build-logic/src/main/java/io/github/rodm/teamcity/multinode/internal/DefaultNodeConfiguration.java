@@ -37,12 +37,14 @@ public class DefaultNodeConfiguration implements NodeConfiguration {
             ));
 
     private final String name;
+    private final DefaultMultiNodeEnvironment environment;
     private final Property<String> port;
     private final ListProperty<String> serverOptions;
 
     @Inject
-    public DefaultNodeConfiguration(String name, ObjectFactory factory) {
+    public DefaultNodeConfiguration(String name, DefaultMultiNodeEnvironment environment, ObjectFactory factory) {
         this.name = name;
+        this.environment = environment;
         this.port = factory.property(String.class);
         this.serverOptions = factory.listProperty(String.class);
         this.serverOptions.addAll(DEFAULT_SERVER_OPTIONS);
@@ -51,6 +53,10 @@ public class DefaultNodeConfiguration implements NodeConfiguration {
     @Override
     public String getName() {
         return name;
+    }
+
+    public Provider<String> getContainerName() {
+        return  environment.getServerNameProperty().map(serverName -> serverName + "-" + getName());
     }
 
     @Override
@@ -86,6 +92,10 @@ public class DefaultNodeConfiguration implements NodeConfiguration {
 
     public Provider<String> getServerOptionsProvider() {
         return asStringProvider(serverOptions);
+    }
+
+    public Provider<String> getLogsDirProperty() {
+        return environment.getDataDirProperty().map(path -> path + "/logs/" + getName());
     }
 
     private Provider<String> asStringProvider(ListProperty<String> options) {
