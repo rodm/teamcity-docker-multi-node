@@ -23,7 +23,7 @@ group = "com.github.rodm.teamcity"
 version = "1.0-SNAPSHOT"
 
 val vendorName by extra("rodm")
-val teamcityVersion by extra("2020.1")
+val teamcityVersion by extra("2026.1")
 
 java {
     toolchain {
