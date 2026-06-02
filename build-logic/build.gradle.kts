@@ -26,6 +26,12 @@ dependencies {
     implementation ("io.github.rodm:gradle-teamcity-plugin:1.5.6")
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 gradlePlugin {
     plugins {
         create("multiNodeEnvironmentsPlugin") {

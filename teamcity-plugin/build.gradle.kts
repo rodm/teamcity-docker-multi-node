@@ -25,6 +25,12 @@ version = "1.0-SNAPSHOT"
 val vendorName by extra("rodm")
 val teamcityVersion by extra("2020.1")
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 teamcity {
     version = teamcityVersion
 
