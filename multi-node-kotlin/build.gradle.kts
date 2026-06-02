@@ -28,8 +28,8 @@ val database by configurations.creating
 val teamcityPlugins by configurations.creating
 
 dependencies {
-    database ("com.mysql:mysql-connector-j:9.7.0")
-//    database ("org.postgresql:postgresql:42.7.11")
+    database (libs.mysql)
+//    database (libs.postgres)
     teamcityPlugins (project(path = ":teamcity-plugin", configuration = "plugin"))
 }
 
