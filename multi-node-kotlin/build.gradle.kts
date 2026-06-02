@@ -28,8 +28,8 @@ val database by configurations.creating
 val teamcityPlugins by configurations.creating
 
 dependencies {
-    database ("com.mysql:mysql-connector-j:9.5.0")
-//    database ("org.postgresql:postgresql:42.7.8")
+    database ("com.mysql:mysql-connector-j:9.7.0")
+//    database ("org.postgresql:postgresql:42.7.11")
     teamcityPlugins (project(path = ":teamcity-plugin", configuration = "plugin"))
 }
 
@@ -44,12 +44,12 @@ teamcity {
             database {
                 useMySQL()
 //                useMySQL {
-//                    image = "mysql:9.5"
+//                    image = "mysql:9.7"
 //                    url = "jdbc:mysql://localhost:3306/teamcity"
 //                }
 //                usePostgreSQL()
 //                usePostgreSQL {
-//                    image = "postgres:18.1"
+//                    image = "postgres:18.4"
 //                    url = "jdbc:postgresql://localhost:5432/teamcity"
 //                }
 
