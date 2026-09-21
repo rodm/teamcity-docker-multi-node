@@ -5,7 +5,7 @@ teamcity = "1.5.6"
 [libraries]
 gradle-teamcity = { module = "io.github.rodm:gradle-teamcity-plugin", version.ref = "teamcity" }
 mysql = { module = "com.mysql:mysql-connector-j", version = "9.7.0" }
-postgres = { module = "org.postgresql:postgresql", version = "42.7.11" }
+postgres = { module = "org.postgresql:postgresql", version = "42.7.13" }
 
 [plugins]
 teamcity-server = { id = "io.github.rodm.teamcity-server", version.ref = "teamcity" }

@@ -32,7 +32,7 @@ public class PostgreSQLDatabaseOptions implements DatabaseOptions {
 
     @Inject
     public PostgreSQLDatabaseOptions(ObjectFactory factory, DatabaseConfiguration configuration) {
-        this.image = factory.property(String.class).convention("postgres:18.4");
+        this.image = factory.property(String.class).convention("postgres:18.6");
         this.url = factory.property(String.class).convention("jdbc:postgresql://localhost:5432/teamcity");
         this.configuration = configuration;
     }

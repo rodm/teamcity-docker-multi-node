@@ -49,7 +49,7 @@ teamcity {
 //                }
 //                usePostgreSQL()
 //                usePostgreSQL {
-//                    image = "postgres:18.4"
+//                    image = "postgres:18.6"
 //                    url = "jdbc:postgresql://localhost:5432/teamcity"
 //                }
 
