@@ -24,8 +24,8 @@ repositories {
     mavenCentral()
 }
 
-val database by configurations.creating
-val teamcityPlugins by configurations.creating
+val database = configurations.create("database")
+val teamcityPlugins = configurations.create("teamcityPlugins")
 
 dependencies {
     database (libs.mysql)

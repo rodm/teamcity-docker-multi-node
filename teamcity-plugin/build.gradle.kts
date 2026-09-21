@@ -22,8 +22,7 @@ plugins {
 group = "com.github.rodm.teamcity"
 version = "1.0-SNAPSHOT"
 
-val vendorName by extra("rodm")
-val teamcityVersion by extra("2026.1")
+val teamcityVersion = "2026.1"
 
 java {
     toolchain {
@@ -41,7 +40,7 @@ teamcity {
             displayName = "Example Plugin"
             description = "Example multi-node plugin"
             version = project.version as String
-            vendorName = extra["vendorName"] as String
+            vendorName = "rodm"
             vendorUrl = "https://github.com/rodm"
             email = "rod.n.mackenzie@gmail.com"
             useSeparateClassloader = true
