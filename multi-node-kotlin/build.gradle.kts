@@ -38,9 +38,9 @@ teamcity {
         baseDataDir = "$rootDir/data"
 
         register("teamcity", MultiNodeEnvironment::class.java) {
-            version = "2026.1"
+            version = "2026.2"
             plugins = configurations["teamcityPlugins"]
-            //agentTag = "2025.11-linux-sudo"
+            //agentTag = "2026.2-linux-sudo"
             database {
                 useMySQL()
 //                useMySQL {

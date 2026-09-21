@@ -22,7 +22,7 @@ plugins {
 group = "com.github.rodm.teamcity"
 version = "1.0-SNAPSHOT"
 
-val teamcityVersion = "2026.1"
+val teamcityVersion = "2026.2"
 
 java {
     toolchain {
